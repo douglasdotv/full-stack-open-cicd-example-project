@@ -51,7 +51,7 @@ jobs:
     needs: lint_build_test
     runs-on: ubuntu-latest
     concurrency: deploy-group
-    if: ${{ env.SKIP_CONDITION }}
+    if: ${{ github.env.SKIP_CONDITION == 'true' }}
     steps:
       - uses: actions/checkout@v4
       - uses: superfly/flyctl-actions/setup-flyctl@master
@@ -63,7 +63,7 @@ jobs:
   tag_release:
     needs: lint_build_test
     runs-on: ubuntu-latest
-    if: ${{ env.SKIP_CONDITION }}
+    if: ${{ github.env.SKIP_CONDITION == 'true' }}
     steps:
       - uses: actions/checkout@v4
         with:
