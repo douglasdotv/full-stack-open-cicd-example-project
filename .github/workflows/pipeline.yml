@@ -34,3 +34,15 @@ jobs:
 
       - name: Run Playwright end-to-end tests
         run: npx playwright test
+
+  deploy:
+    needs: lint_build_test
+    runs-on: ubuntu-latest
+    concurrency: deploy-group
+    steps:
+      - uses: actions/checkout@v4
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - name: Deploy to Fly.io
+        run: flyctl deploy --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
