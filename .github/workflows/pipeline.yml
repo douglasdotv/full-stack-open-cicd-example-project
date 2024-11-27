@@ -1,11 +1,5 @@
 name: CI/CD
 
-env:
-  SKIP_CONDITION: >
-    github.event_name == 'push' &&
-    github.ref == 'refs/heads/main' &&
-    !contains(join(github.event.commits.*.message, ' '), '#skip')
-
 on:
   push:
     branches:
@@ -51,7 +45,10 @@ jobs:
     needs: lint_build_test
     runs-on: ubuntu-latest
     concurrency: deploy-group
-    if: ${{ github.env.SKIP_CONDITION == 'true' }}
+    if: >
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main' &&
+      !contains(join(github.event.commits.*.message, ' '), '#skip')
     steps:
       - uses: actions/checkout@v4
       - uses: superfly/flyctl-actions/setup-flyctl@master
@@ -63,7 +60,10 @@ jobs:
   tag_release:
     needs: lint_build_test
     runs-on: ubuntu-latest
-    if: ${{ github.env.SKIP_CONDITION == 'true' }}
+    if: >
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main' &&
+      !contains(join(github.event.commits.*.message, ' '), '#skip')
     steps:
       - uses: actions/checkout@v4
         with:
