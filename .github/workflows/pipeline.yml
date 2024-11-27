@@ -45,6 +45,7 @@ jobs:
     needs: lint_build_test
     runs-on: ubuntu-latest
     concurrency: deploy-group
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
       - uses: superfly/flyctl-actions/setup-flyctl@master
