@@ -41,6 +41,14 @@ jobs:
       - name: Run Playwright end-to-end tests
         run: npx playwright test
 
+      - name: Notify Discord on build failure
+        if: failure()
+        uses: rjstone/discord-webhook-notify@v1
+        with:
+          severity: error
+          details: "Build failed. Please check commit ${{ github.event.head_commit.id }}."
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+
   deploy:
     needs: lint_build_test
     runs-on: ubuntu-latest
@@ -56,6 +64,14 @@ jobs:
         run: flyctl deploy --remote-only
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      - name: Notify Discord on successful deployment
+        if: success()
+        uses: rjstone/discord-webhook-notify@v1
+        with:
+          severity: info
+          details: "Deployment succeeded! New version live."
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
 
   tag_release:
     needs: lint_build_test
