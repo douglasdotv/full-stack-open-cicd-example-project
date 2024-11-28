@@ -48,9 +48,11 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
           args: |
-            **❌ Build Failed**
-            - **Commit:** `${{ github.event.head_commit.id }}`
-            - **Author:** `${{ github.event.head_commit.author.name }}`
+            **❌ Build failed!**
+            - **Repository:** `${{ github.repository }}`
+            - **Branch:** `${{ github.ref }}`
+            - **Commit:** `${{ github.sha }}`
+            - **Author:** `${{ github.actor }}`
             - **Message:** `${{ github.event.head_commit.message }}`
 
   deploy:
@@ -76,8 +78,13 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
           args: |
-            🎉 **Deployment Succeeded!**
-            New version is now live.
+            🎉 **Deployment succeeded!**
+            - **Repository:** `${{ github.repository }}`
+            - **Branch:** `${{ github.ref }}`
+            - **Commit:** `${{ github.sha }}`
+            - **Author:** `${{ github.actor }}`
+            - **Message:** `${{ github.event.head_commit.message }}`
+            - **URL:** `${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}`
 
   tag_release:
     needs: lint_build_test
