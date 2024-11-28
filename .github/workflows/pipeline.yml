@@ -43,11 +43,15 @@ jobs:
 
       - name: Notify Discord on build failure
         if: failure()
-        uses: rjstone/discord-webhook-notify@v1
+        uses: Ilshidur/action-discord@0c4b27844ba47cb1c7bee539c8eead5284ce9fa9
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
-          severity: error
-          details: "Build failed. Please check commit ${{ github.event.head_commit.id }}."
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+          args: |
+            **❌ Build Failed**
+            - **Commit:** `${{ github.event.head_commit.id }}`
+            - **Author:** `${{ github.event.head_commit.author.name }}`
+            - **Message:** `${{ github.event.head_commit.message }}`
 
   deploy:
     needs: lint_build_test
@@ -67,11 +71,13 @@ jobs:
 
       - name: Notify Discord on successful deployment
         if: success()
-        uses: rjstone/discord-webhook-notify@v1
+        uses: Ilshidur/action-discord@0c4b27844ba47cb1c7bee539c8eead5284ce9fa9
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
-          severity: info
-          details: "Deployment succeeded! New version live."
-          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+          args: |
+            🎉 **Deployment Succeeded!**
+            New version is now live.
 
   tag_release:
     needs: lint_build_test
