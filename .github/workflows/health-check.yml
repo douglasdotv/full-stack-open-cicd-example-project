@@ -1,0 +1,37 @@
+# .github/workflows/health-check.yml
+
+name: Periodic Health Check
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  health_check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check the deployed service URL
+        uses: jtalk/url-health-check-action@v4
+        with:
+          url: https://full-stack-open-cicd-example-project.fly.dev/health
+          follow-redirect: false
+          max-attempts: 3
+          retry-delay: 5s
+          retry-all: false
+
+      - name: Notify Discord on health check failure
+        if: failure()
+        uses: Ilshidur/action-discord@0c4b27844ba47cb1c7bee539c8eead5284ce9fa9
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        with:
+          args: |
+            **❌ Health check failed.**
+            - **Repository:** `${{ github.repository }}`
+            - **Branch:** `${{ github.ref }}`
+            - **Commit:** `${{ github.sha }}`
+            - **Author:** `${{ github.actor }}`
+            - **Message:** `${{ github.event.head_commit.message }}`
+            - **Run URL:** `${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
